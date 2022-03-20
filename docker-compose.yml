@@ -1,13 +1,10 @@
 version: '3'
 
-volumes:
-  mysql_data:
-      driver: local
-
 services:
   mysql:
       platform: "linux/x86_64"
       image: "mysql:8.0.28"
+      restart: "always"
       volumes:
         - "./data/mysql:/var/lib/mysql"
       environment:
@@ -15,20 +12,29 @@ services:
         MYSQL_DATABASE: keycloak
         MYSQL_USER: keycloak
         MYSQL_PASSWORD: 11223344
+      networks:
+        - local-keycloak
   keycloak:
       platform: "linux/x86_64"
       image: "quay.io/keycloak/keycloak:17.0.0"
+      restart: "always"
+      command: "start-dev"
       environment:
         DB_VENDOR: MYSQL
         DB_ADDR: mysql
         DB_DATABASE: keycloak
         DB_USER: keycloak
         DB_PASSWORD: 11223344
-        KEYCLOAK_USER: admin
-        KEYCLOAK_PASSWORD: 11223344
+        KEYCLOAK_ADMIN: admin
+        KEYCLOAK_ADMIN_PASSWORD: 11223344
         # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the MySQL JDBC driver documentation in order to use it.
         #JDBC_PARAMS: "connectTimeout=30000"
       ports:
-        - "8080:8080"
+        - "33333:8080"
       depends_on:
         - mysql
+      networks:
+        - local-keycloak
+
+networks:
+  local-keycloak:
