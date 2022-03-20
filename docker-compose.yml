@@ -17,6 +17,7 @@ services:
   keycloak:
       platform: "linux/x86_64"
       image: "quay.io/keycloak/keycloak:17.0.0"
+      hostname: "sso.local.com" #Set hostname of container
       restart: "always"
       command: "start-dev"
       environment:
@@ -27,6 +28,10 @@ services:
         DB_PASSWORD: 11223344
         KEYCLOAK_ADMIN: admin
         KEYCLOAK_ADMIN_PASSWORD: 11223344
+        PROXY_ADDRESS_FORWARDING: "true"  #Enable proxy forward
+        KC_HTTP_RELATIVE_PATH: "/auth"  #Set realtive path to use when login
+        KC_HOSTNAME: "sso.local.com" #Set hostname
+        KC_PROXY: "passthrough" #Set proxy mode
         # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the MySQL JDBC driver documentation in order to use it.
         #JDBC_PARAMS: "connectTimeout=30000"
       ports:
